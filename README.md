@@ -41,11 +41,11 @@ const Text = ({ message }) => {
 // This HTML-like syntax ^ is JSX
 ```
 
-### B Component Composition is fast and easy to read
+### B. Component Composition is fast and easy to read
 
 Vanilla JS with the DOM API (imperative style):
 
-```jsx
+```js
 const makeCatInstaElement = () => {
   const container = document.createElement("div");
   container.className = "insta-pic";
@@ -83,9 +83,26 @@ const CatInsta = () => {
 }
 ```
 
-### C) The Virtual DOM offers some performance benefits when re-rendering components
+### C. The Virtual DOM offers some performance benefits when re-rendering components
 
 [Read more about it here](https://blog.logrocket.com/virtual-dom-react/#comparison-chart-real-virtual-shadow-dom)
+
+## Vite and React
+
+All of our project up until this point have used Vanilla JS. Today is the day where you get to create a vite project using React!!!
+
+```bash
+npm create vite@latest
+# Choose Project Name
+? Project name: > <name of your project>
+# select React
+# select JavaScript
+
+cd <name of your project> && npm i
+# delete all of the starter code from App.css and index.css 
+# delete everything in App.jsx except for the App function declaration.
+# delete line 4 in main.jsx
+```
 
 ## Rendering Components
 
@@ -111,7 +128,6 @@ const root = ReactDOM.createRoot(rootEl);
 root.render(<h1>Hello World</h1>);
 ```
 
-- `import` is the front-end (browser) equivalent of the `require` function which is only used in the back-end (Node).
 - We're using the `client` version of `ReactDOM` (there is also a `native` version for mobile).
 - Note that the filename ends with `.jsx`. This is a new file type that enables us to use JSX in our code.
 
