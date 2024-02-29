@@ -66,7 +66,7 @@ React (declarative style):
 
 ```jsx
 const Caption = ({ text }) => {
-  return <p className="caption">{text}</p>;
+  return <figcaption> className="caption">{text}</figcaption>;
 };
 
 const Picture = ({ src }) => {
@@ -75,10 +75,10 @@ const Picture = ({ src }) => {
 
 const CatInsta = () => {
   return (
-    <div className="insta-pic">
+    <figure className="insta-pic">
       <Caption text="cute cat">
-      <Picture src="img/cat.jpeg">
-    </div>
+      <Picture src="./images/my-cat.jpg">
+    </figure>
   )
 }
 ```
@@ -142,6 +142,33 @@ ReactDOM.createRoot(document.querySelector("#root")).render(
 );
 ```
 
+### Vite helps with this
+
+When you build a React project using vite This is already built out for you.
+
+```html
+<!-- index.html -->
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+```
+
+```jsx
+// main.jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+```
+
+For now we'll be working in the `App.jsx` file.
+
 ### JSX Code must be compiled
 
 JSX in our code (`<h1>...</h1>`) cannot simply be executed by our browser. It must first be **compiled** (converted) to vanilla JS.
@@ -159,20 +186,7 @@ JSX in our code (`<h1>...</h1>`) cannot simply be executed by our browser. It mu
 >
 > </details>
 
-To help us compile our JSX code, we're using a tool called [Vite](https://vitejs.dev/) (french for "quick", rhymes with "feet"). Vite will compile our code and then create a development server that will serve our compiled website.
-
-We'll go over how to create a new React project using Vite a little later. For now, take a look at the `package.json` file to see the project's dependencies and available scripts.
-
-- Use the `npm run dev` command to start the React development server.
-
-<br>
-
-> <details><summary>What is the React Development Server?</summary>
-> <br>
->
-> The development server is a bit like express in that it runs on a port on our computer where we can access our compiled website. This development server has **hot-reloading** which lets us instantly see any changes we make while developing. In production, we compile the React code once to produce **static assets** which can be served by our traditional Express server. Any changes we make would require use to "rebuild" those static assets.
->
-> </details>
+Vite is doing the heavy lifting when it comes to the rendering.
 
 ## Components & JSX
 
@@ -183,17 +197,18 @@ React components are functions that return a single JSX element.
 The first component that we create is typically called `App`
 
 ```jsx
-// inside main.jsx
-import ReactDOM from "react-dom/client";
-
+// inside App.jsx
 const App = () => {
-  return <h1>Hello World</h1>;
-};
+  return (
+    <h1>Hello World</h1>
+  )
+}
 
-ReactDOM.createRoot(document.querySelector("#root")).render(<App />);
+export default App
 ```
 
 - Component are functions. Note the capitalized name.
+  - All components use Pascal casing.
 - This `App` component returns a `<h1>` _JSX element_.
 
 ## Nested Components
@@ -201,18 +216,16 @@ ReactDOM.createRoot(document.querySelector("#root")).render(<App />);
 By writing our UI as individual function-components, we can nest our components within each other.
 
 ```jsx
-import ReactDOM from "react-dom/client";
-
 const Header = () => {
   return <h1>My Pet Pics</h1>;
 };
 
 const InstagramPost = () => {
   return (
-    <div>
+    <figure>
       <img alt="cat pic" src="img/cat.jpeg" />
-      <p>Check out my cute cat!</p>
-    </div>
+      <figcaption>Check out my cute cat!</figcaption>
+    </figure>
   );
 };
 
@@ -225,7 +238,6 @@ const App = () => {
   );
 };
 
-ReactDOM.createRoot(document.querySelector("#root")).render(<App />);
 ```
 
 **Q: What are the differences in how each of these components return their children?**
@@ -234,12 +246,12 @@ ReactDOM.createRoot(document.querySelector("#root")).render(<App />);
 <summary>Answer</summary>
 
 - `InstagramPost` and `App` each return more than one line of JSX so the returned value is wrapped in `()`
-- The `App` component uses fragments (`<>`) to wrap its child elements while `InstagramPost` uses a `<div>`.
+- The `App` component uses fragments (`<>`) to wrap its child elements while `InstagramPost` uses a `<figure>`.
 - `Header` and `InstagramPost` are both rendered by `App` and are self-closing
 
 Components can return as much (or as little) JSX as you want, **but they all need to return a single surrounding element.**
 
-This can be achieved using using a `<div>` or using **fragments** (`<> </>`).
+This can be achieved using using a semantic parent element(`<figure>`, `<sections>` etc...) or using **fragments** (`<> </>`).
 
 </details>
 
@@ -257,10 +269,10 @@ We can add style by using the `className` property.
 
 ```jsx
 const Message = () => {
-  return <h1 className="red">Hello World!</h1>;
+  return <p className="red">Hello World!</p>;
 };
 
-const App = () => {
+const Messages = () => {
   return (
     <div>
       <Message />
@@ -269,11 +281,22 @@ const App = () => {
     </div>
   );
 };
+
+const App = () => {
+  return (
+    <>
+      <Header />
+      <NameHeader />
+      <Messages />
+      <InstagramPost />
+    </>
+  );
+};
 ```
 
 <details><summary><strong>Q: What will this render?</strong></summary><br>
 
-![](./img/style.png)
+![](./images/message-example.png)
 
 Note how the `className` attribute in JSX is converted into the HTML attribute `class`.
 
@@ -283,15 +306,15 @@ The `for` attribute for `<label>` elements is another example of this. Instead, 
 
 </details>
 
-<details><summary><strong>Q: How can I add a <code>class="insta-pic"</code> attribute to the <code>div</code> in my <code>InstagramPost</code> component?</strong></summary><br>
+<details><summary><strong>Q: How can I add a <code>class="insta-pic"</code> attribute to the <code>figure</code> in my <code>InstagramPost</code> component?</strong></summary><br>
 
 ```jsx
 const InstagramPost = () => {
   return (
-    <div className="insta-pic">
+    <figure className="insta-pic">
       <img alt="cat pic" src="img/cat.jpeg" />
-      <p>Check out my cute cat!</p>
-    </div>
+      <figcaption>Check out my cute cat!</figcaption>
+    </figure>
   );
 };
 ```
@@ -308,17 +331,20 @@ In this example, the parent component is `App` and it provides a `name` prop to 
 const NameHeader = (props) => {
   const { name } = props;
   return (
-    <h1>Hello! My name is {name}</h1>
+    <h2>Hello! My name is {name}</h2>
   )
 }
 
 const App = () => {
   return (
-    <NameHeader name="Ben" />
-    <NameHeader name="Carmen" />
-    <NameHeader name="Motun" />
-  )
-}
+    <>
+      <Header />
+      <NameHeader name="Gonzalo"/>
+      <Messages />
+      <InstagramPost />
+    </>
+  );
+};
 ```
 
 Note how we can inject JavaScript values into our components using `{}`.
@@ -331,7 +357,7 @@ Note how we can inject JavaScript values into our components using `{}`.
 
 </details><br>
 
-The `props` parameter will _always_ be passed as an object (even if it is empty) so it is often destructured immediately within the parameter list:
+The `props` parameter will _always_ be passed as an object (even if it is empty) so it is often destructured immediately in the signature:
 
 ```jsx
 const NameHeader = ({ name }) => {
@@ -358,9 +384,9 @@ const InstagramPost = ({ src, caption }) => {
 
 // Array of data
 const pictures = [
-  { src: "img/cat.jpeg", caption: "meow!" },
-  { src: "img/dog.jpeg", caption: "arf!" },
-  { src: "img/duck.jpeg", caption: "quack!" },
+  { src: "img/cat.jpeg", caption: "cat!",  },
+  { src: "img/dog.jpeg", caption: "dog!" },
+  { src: "img/duck.jpeg", caption: "duck!" },
 ];
 
 // Create an <InstagramPost /> for each element
@@ -379,10 +405,14 @@ const App = () => {
   return (
     <>
       <Header />
+      <NameHeader name="Gonzalo"/>
+      <Messages />
+      <InstagramPost />
       <PicturesList />
     </>
   );
 };
 
-ReactDOM.createRoot(document.querySelector("#root")).render(<App />);
+
+
 ```
