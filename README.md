@@ -1,15 +1,32 @@
 # 7-0-0-intro-to-react
 
-Key Topics:
+In this lesson, you will learn the basics of React.
 
-- React
-- Component
-- JSX
-- Render
-- ReactDOM
-- Style / `className`
-- Props
-- Injecting JS
+**Table of Contents:**
+- [Terms:](#terms)
+- [What is React \& Why Use It?](#what-is-react--why-use-it)
+  - [A. Say goodbye to the clunky DOM API](#a-say-goodbye-to-the-clunky-dom-api)
+  - [B. Component Composition is fast and easy to read](#b-component-composition-is-fast-and-easy-to-read)
+  - [C. The Virtual DOM offers some performance benefits when re-rendering components](#c-the-virtual-dom-offers-some-performance-benefits-when-re-rendering-components)
+- [Starting a React Project with Vite](#starting-a-react-project-with-vite)
+- [Components \& JSX](#components--jsx)
+- [Nested Components](#nested-components)
+- [Adding Style](#adding-style)
+- [Sharing Data Between Components With Props](#sharing-data-between-components-with-props)
+- [Rendering A List of Elements](#rendering-a-list-of-elements)
+- [Rendering the Root Component With ReactDOM](#rendering-the-root-component-with-reactdom)
+  - [Under the hood: JSX Code must be compiled](#under-the-hood-jsx-code-must-be-compiled)
+
+
+## Terms:
+
+- **React** — a library for building reusable, composable, and scalable user-interfaces made up of components.
+- **Component** — a piece of the UI (user interface) that has its own logic and appearance. Components are functions that return JSX.
+- **JSX** — an extension of JavaScript that lets you write HTML in React components.
+- **Component Composition** — the process of combining smaller, reusable components together to create larger, more complex components
+- **Root Component** — the top-level component that all other components are children of. Typically called `App`.
+- **`react-dom/client`** — a React package that lets you render React components on the client (in the browser)
+- **Prop** — a piece of data passed from a parent component to a child component.
 
 ## What is React & Why Use It?
 
@@ -19,7 +36,9 @@ React focuses on building reusable **components** that can be composed into larg
 
 Need more reasons to want to learn React?
 
-### A. Say goodbye to the clunky DOM API**
+### A. Say goodbye to the clunky DOM API
+
+Compare and contrast these code snippets for creating a dynamic text element.
 
 Vanilla JS with the DOM API (imperative style):
 
@@ -32,7 +51,7 @@ const makeTextElement = (message) => {
 };
 ```
 
-React (declarative style) and JSX:
+React (declarative style):
 
 ```jsx
 const Text = ({ message }) => {
@@ -41,7 +60,13 @@ const Text = ({ message }) => {
 // This HTML-like syntax ^ is JSX
 ```
 
+In React, we are able to return markup language (like HTML) from functions. This is called **JSX** (JavaScript XML).
+
 ### B. Component Composition is fast and easy to read
+
+**Components** let you split the UI into independent, reusable pieces, and think about each piece in isolation. 
+
+**Component Composition** is the process of combining smaller, reusable components together to create larger, more complex components
 
 Vanilla JS with the DOM API (imperative style):
 
@@ -65,128 +90,60 @@ const makeCatInstaElement = () => {
 React (declarative style):
 
 ```jsx
-const Caption = ({ text }) => {
-  return <figcaption> className="caption">{text}</figcaption>;
-};
-
 const Picture = ({ src }) => {
   return <img src={src} />;
 };
 
-const CatInsta = () => {
+const Caption = ({ text }) => {
+  return <figcaption className="caption">{text}</figcaption>;
+};
+
+const CatInstaPost = () => {
   return (
     <figure className="insta-pic">
-      <Caption text="cute cat">
       <Picture src="./images/my-cat.jpg">
+      <Caption text="cute cat">
     </figure>
   )
 }
 ```
 
+Notice that `<Caption />` and `<Picture />` start with a capital letter. That’s how you know it’s a React **component**. 
+
+React component names must always start with a capital letter, while HTML tags must be lowercase.
+
+
 ### C. The Virtual DOM offers some performance benefits when re-rendering components
 
 [Read more about it here](https://blog.logrocket.com/virtual-dom-react/#comparison-chart-real-virtual-shadow-dom)
 
-## Vite and React
+## Starting a React Project with Vite
 
-All of our project up until this point have used Vanilla JS. Today is the day where you get to create a vite project using React!!!
+Now that you know at least some of the basic terms of React, let's look at actually building a React app.
+
+All of our projects up until this point have used Vanilla JS. Today is the day where you get to create a vite project using React!!!
 
 ```bash
 npm create vite@latest
 # Choose Project Name
-? Project name: > <name of your project>
+? Project name: <name of your project>
 # select React
 # select JavaScript
 
 cd <name of your project> && npm i
-# delete all of the starter code from App.css and index.css 
-# delete everything in App.jsx except for the App function declaration.
-# delete line 4 in main.jsx
+npm run dev
 ```
 
-## Rendering Components
+Every React project will have this rough structure:
+* `index.html` — the HTML file served to the client. It loads `src/main.jsx`.
+* `src/main.jsx` — the entry point of the app. It renders the **root component** `App` into the DOM.
+* `src/App.jsx` — the root component.
 
-To make our components visible in our UI, we need to **render** them. React doesn't provide this functionality out of the box.
+Take a look around the `App.jsx` file. By default, you will be given a counter app to start with. Notice that the `App` component returns JSX!
 
-Instead, we:
+For now, delete everything in the `App` function declaration.
 
-- Import a package called `ReactDOM`
-- Use the `ReactDOM.createRoot` method to create a `root` object.
-- Then we call `root.render`:
-
-```jsx
-// inside main.jsx
-import ReactDOM from "react-dom/client";
-
-// Get the #root from the DOM
-const rootEl = document.querySelector("#root");
-
-// Create a ReactDOM root
-const root = ReactDOM.createRoot(rootEl);
-
-// Render JSX
-root.render(<h1>Hello World</h1>);
-```
-
-- We're using the `client` version of `ReactDOM` (there is also a `native` version for mobile).
-- Note that the filename ends with `.jsx`. This is a new file type that enables us to use JSX in our code.
-
-Often, the rendering code will be condensed like this:
-
-```jsx
-// inside main.jsx
-import ReactDOM from "react-dom/client";
-
-ReactDOM.createRoot(document.querySelector("#root")).render(
-  <h1>Hello World</h1>
-);
-```
-
-### Vite helps with this
-
-When you build a React project using vite This is already built out for you.
-
-```html
-<!-- index.html -->
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-```
-
-```jsx
-// main.jsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
-```
-
-For now we'll be working in the `App.jsx` file.
-
-### JSX Code must be compiled
-
-JSX in our code (`<h1>...</h1>`) cannot simply be executed by our browser. It must first be **compiled** (converted) to vanilla JS.
-
-> <details><summary>See what this code would look like if it were written without JSX</summary><br>
->
-> Note how we have to use `React.createElement` here
->
-> ```js
-> const rootEl = document.getElementById("root");
-> const root = ReactDOM.createRoot(rootEl);
->
-> root.render(React.createElement("h1", {}, "Hello World"));
-> ```
->
-> </details>
-
-Vite is doing the heavy lifting when it comes to the rendering.
+> Notice the `.jsx` extension? Without it, we wouldn't be able to write JSX in this file.
 
 ## Components & JSX
 
@@ -240,6 +197,10 @@ const App = () => {
 
 ```
 
+Components must return a single surrounding element.
+
+When returning multiple elements, wrap the elements in a parent element (`<section>`) or a **fragment** (`<> </>`)
+
 **Q: What are the differences in how each of these components return their children?**
 
 <details>
@@ -249,11 +210,9 @@ const App = () => {
 - The `App` component uses fragments (`<>`) to wrap its child elements while `InstagramPost` uses a `<figure>`.
 - `Header` and `InstagramPost` are both rendered by `App` and are self-closing
 
-Components can return as much (or as little) JSX as you want, **but they all need to return a single surrounding element.**
-
-This can be achieved using using a semantic parent element(`<figure>`, `<sections>` etc...) or using **fragments** (`<> </>`).
-
 </details>
+
+
 
 ## Adding Style
 
@@ -321,7 +280,7 @@ const InstagramPost = () => {
 
 </details>
 
-## Props
+## Sharing Data Between Components With Props
 
 Every React function-component is passed an argument called `props`. It is an object containing properties provided to the component by the parent.
 
@@ -412,7 +371,54 @@ const App = () => {
     </>
   );
 };
-
-
-
 ```
+
+
+## Rendering the Root Component With ReactDOM
+
+Head over to the `main.jsx` file. 
+
+The primary purpose of this file is render the root component `App`. To do so we:
+
+- Import a package called `ReactDOM`
+- Use the `ReactDOM.createRoot` method to create a `root` object.
+- Then we call `root.render` and pass in the `App` component.
+
+This is mostly handled when Vite creates the project for you so no need to memorize it:
+
+```jsx
+// main.jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+```
+
+A few notes: 
+
+- We're using the `client` version of `ReactDOM` (there is also a `native` version for mobile).
+- `React.StrictMode` is a wrapper-component that detects potential React-related in our application. It doesn't render anything visible.
+
+### Under the hood: JSX Code must be compiled
+
+JSX in our code (`<h1>...</h1>`) cannot simply be executed by our browser. It must first be **compiled** (converted) to vanilla JS.
+
+> <details><summary>See what this code would look like if it were written without JSX</summary><br>
+>
+> Note how we have to use `React.createElement` here
+>
+> ```js
+> const rootEl = document.getElementById("root");
+> const root = ReactDOM.createRoot(rootEl);
+>
+> root.render(React.createElement("h1", {}, "Hello World"));
+> ```
+>
+> </details>
+
+Vite is doing the heavy lifting when it comes to the rendering.
