@@ -314,21 +314,21 @@ JSX let's you put markup into our JavaScript.
 We can also insert JavaScript into our JSX using curly braces `{}`.
 
 ```jsx
-const InstagramPost = () => {
-  const catData = {
-    alt: "Reggie the cat",
-    src: "images/cat.jpeg",
-    caption: "Check out my cute cat Reggie!"
-  }
+const catPicture = {
+  alt: "Reggie the cat",
+  src: "images/cat.jpeg",
+  caption: "Check out my cute cat Reggie!"
+}
 
+const InstagramPost = () => {
   return (
     <figure>
       <img 
-        src={catData.src} 
-        alt={`Photo of ${catData.alt}`}  
+        src={catPicture.src} 
+        alt={`Photo of ${catPicture.alt}`}  
         className="insta-pic" 
       />
-      <figcaption style={{ fontStyle: 'italic' }}>{catData.caption}</figcaption>
+      <figcaption style={{ fontStyle: 'italic' }}>{catPicture.caption}</figcaption>
     </figure>
   );
 };
@@ -344,43 +344,53 @@ What makes React so powerful is the ability to share data between components usi
 
 Every React function-component is passed an argument called `props`. It is an object containing properties provided to the component by the parent.
 
-In this example, the parent component is `App` and it provides a `name` prop to each instance of the `NameHeader` component.
+In this example, the parent component is `App` and it provides a `pictureData` prop to each instance of the `InstagramPost` component.
 
 ```jsx
-const NameHeader = (props) => {
-  const { name } = props;
-  return (
-    <h2>Hello! My name is {name}</h2>
-  )
+const catPicture = {
+  alt: "Reggie the cat",
+  src: "images/cat.jpeg",
+  caption: "Check out my cute cat Reggie!"
+}
+const dogPicture = {
+  alt: "Robert the dog",
+  src: "images/dog.jpeg",
+  caption: "Check out my cute dog Robert!"
+}
+const duckPicture = {
+  alt: "Daffy the Duck",
+  src: "images/duck.jpeg",
+  caption: "Check out my cute duck Daffy!"
 }
 
-const App = () => {
+const InstagramPost = ({ pictureData }) => {
   return (
-    <>
-      <Header />
-      <NameHeader name="Gonzalo"/>
-      <Messages />
-      <InstagramPost />
-    </>
+    <figure>
+      <img 
+        src={pictureData.src} 
+        alt={`Photo of ${pictureData.alt}`}  
+        className="insta-pic" 
+      />
+      <figcaption style={{ fontStyle: 'italic' }}>{pictureData.caption}</figcaption>
+    </figure>
   );
 };
+
+// Root component
+function App() {
+  // Component composition
+  return (
+    <>
+      <h1>My Pet Pics</h1>
+      <InstagramPost pictureData={catPicture} />
+      <InstagramPost pictureData={dogPicture} />
+      <InstagramPost pictureData={duckPicture} />
+    </>
+  )
+}
 ```
 
-<details><summary><strong>Q: What will this render?</strong></summary>
-
-<br>
-
-![](./img/props.png)
-
-</details><br>
-
-The `props` parameter will _always_ be passed as an object (even if it is empty) so it is often destructured immediately in the signature:
-
-```jsx
-const NameHeader = ({ name }) => {
-  return <h1>Hello! My name is {name}</h1>;
-};
-```
+**Q: What will this render?**
 
 ## Rendering A List of Elements
 
@@ -389,31 +399,40 @@ const NameHeader = ({ name }) => {
 - Give each element a `key` that should be unique (using the index of the array is okay but not ideal)
 
 ```jsx
-import ReactDOM from "react-dom/client";
-
-const Header = () => {
-  /* ... */
-};
-
-const InstagramPost = ({ src, caption }) => {
+const InstagramPost = ({ pictureData }) => {
   /* ... */
 };
 
 // Array of data
 const pictures = [
-  { src: "images/cat.jpeg", caption: "cat!",  },
-  { src: "images/dog.jpeg", caption: "dog!" },
-  { src: "images/duck.jpeg", caption: "duck!" },
-];
+  {
+    id: 1,
+    alt: "Reggie the cat",
+    src: "images/cat.jpeg",
+    caption: "Check out my cute cat Reggie!"
+  },
+  {
+    id: 2,
+    alt: "Robert the dog",
+    src: "images/dog.jpeg",
+    caption: "Check out my cute dog Robert!"
+  },
+  {
+    id: 3,
+    alt: "Daffy the Duck",
+    src: "images/duck.jpeg",
+    caption: "Check out my cute duck Daffy!"
+  }
+]
 
 // Render the array in a ul
 const PicturesList = () => {
   return (
     <ul>
       {
-        pictures.map((picture, idx) => {
+        pictures.map((picture) => {
           return (
-            <InstagramPost key={idx} src={picture.src} caption={picture.caption} />
+            <InstagramPost key={picture.id} pictureData={picture} />
           );
         })
       }
@@ -425,9 +444,6 @@ const App = () => {
   return (
     <>
       <Header />
-      <NameHeader name="Gonzalo"/>
-      <Messages />
-      <InstagramPost />
       <PicturesList />
     </>
   );
