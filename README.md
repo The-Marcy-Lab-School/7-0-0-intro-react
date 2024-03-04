@@ -9,12 +9,13 @@ In this lesson, you will learn the basics of React.
   - [B. Component Composition is fast and easy to read](#b-component-composition-is-fast-and-easy-to-read)
   - [C. The Virtual DOM offers some performance benefits when re-rendering components](#c-the-virtual-dom-offers-some-performance-benefits-when-re-rendering-components)
 - [Starting a React Project with Vite](#starting-a-react-project-with-vite)
+- [Rendering the Root Component With ReactDOM](#rendering-the-root-component-with-reactdom)
 - [Components \& JSX](#components--jsx)
 - [Nested Components](#nested-components)
 - [Adding Style](#adding-style)
+- [Inserting Data Into Components](#inserting-data-into-components)
 - [Sharing Data Between Components With Props](#sharing-data-between-components-with-props)
 - [Rendering A List of Elements](#rendering-a-list-of-elements)
-- [Rendering the Root Component With ReactDOM](#rendering-the-root-component-with-reactdom)
   - [Under the hood: JSX Code must be compiled](#under-the-hood-jsx-code-must-be-compiled)
 
 
@@ -98,14 +99,14 @@ const Caption = ({ text }) => {
   return <figcaption className="caption">{text}</figcaption>;
 };
 
-const CatInstaPost = () => {
+const InstagramPost = () => {
   return (
     <figure className="insta-pic">
-      <Picture src="./images/my-cat.jpg">
-      <Caption text="cute cat">
+      <Picture src="./images/my-cat.jpg" />
+      <Caption text="cute cat" />
     </figure>
-  )
-}
+  );
+};
 ```
 
 Notice that `<Caption />` and `<Picture />` start with a capital letter. That’s how you know it’s a React **component**. 
@@ -134,20 +135,46 @@ cd <name of your project> && npm i
 npm run dev
 ```
 
+By default you will be given a counter app. Take a look around!
+
 Every React project will have this rough structure:
 * `index.html` — the HTML file served to the client. It loads `src/main.jsx`.
-* `src/main.jsx` — the entry point of the app. It renders the **root component** `App` into the DOM.
+* `src/main.jsx` — the entry point of the app. It uses the `react-dom/client` package to render the **root component** `App` into the DOM.
 * `src/App.jsx` — the root component.
-
-Take a look around the `App.jsx` file. By default, you will be given a counter app to start with. Notice that the `App` component returns JSX!
-
-For now, delete everything in the `App` function declaration.
 
 > Notice the `.jsx` extension? Without it, we wouldn't be able to write JSX in this file.
 
-## Components & JSX
+## Rendering the Root Component With ReactDOM
 
-React is at its best when we separate the UI into individual **components**.
+How does all of this actually get to the screen? Head over to the `main.jsx` file.
+
+The primary purpose of this file is render the root component `App`. To do so we:
+
+- Import a package called `ReactDOM`
+- Use the `ReactDOM.createRoot` method to create a `root` object.
+- Then we call `root.render` and pass in the `App` component.
+
+This is mostly handled when Vite creates the project for you so no need to memorize it:
+
+```jsx
+// main.jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+```
+
+A few notes: 
+
+- We're using the `client` version of `ReactDOM` (there is also a `native` version for mobile).
+- `React.StrictMode` is a wrapper-component that detects potential React-related in our application. It doesn't render anything visible.
+
+## Components & JSX
 
 React components are functions that return a single JSX element.
 
@@ -157,20 +184,26 @@ The first component that we create is typically called `App`
 // inside App.jsx
 const App = () => {
   return (
-    <h1>Hello World</h1>
+    <header>
+      <h1>Hello World</h1>
+      <p>It's a great day</p>
+    </header>
   )
 }
 
 export default App
 ```
 
-- Component are functions. Note the capitalized name.
-  - All components use Pascal casing.
-- This `App` component returns a `<h1>` _JSX element_.
+- Component are functions that return JSX. 
+- Note the capitalized name. All components must use PascalCasing.
+- Components must return a single surrounding element. Here, we return a `header`.
+- When returning multiple elements, wrap the elements parentheses `()`.
 
 ## Nested Components
 
-By writing our UI as individual function-components, we can nest our components within each other.
+React is at its best when we separate the UI into individual components and then combine them to create the entire UI.
+
+To render a component inside another component, we use the name of the component as if it were a self-closing HTML tag: `<ComponentName />` 
 
 ```jsx
 const Header = () => {
@@ -180,39 +213,33 @@ const Header = () => {
 const InstagramPost = () => {
   return (
     <figure>
-      <img alt="cat pic" src="img/cat.jpeg" />
-      <figcaption>Check out my cute cat!</figcaption>
+      <img alt="Reggie the cat" src="images/cat.jpeg" />
+      <figcaption>Check out my cute cat Reggie!</figcaption>
     </figure>
   );
 };
 
 const App = () => {
   return (
-    <>
+    <> 
       <Header />
       <InstagramPost />
     </>
   );
 };
 
+export default App
 ```
 
-Components must return a single surrounding element.
-
-When returning multiple elements, wrap the elements in a parent element (`<section>`) or a **fragment** (`<> </>`)
-
-**Q: What are the differences in how each of these components return their children?**
+**Q: Compare and Contrast how each of these components return their children. What do you notice?**
 
 <details>
 <summary>Answer</summary>
 
 - `InstagramPost` and `App` each return more than one line of JSX so the returned value is wrapped in `()`
-- The `App` component uses fragments (`<>`) to wrap its child elements while `InstagramPost` uses a `<figure>`.
-- `Header` and `InstagramPost` are both rendered by `App` and are self-closing
+- The `App` component uses fragments (`<>`) to wrap its child elements while `InstagramPost` uses a `<figure>`. Fragments let you group elements without a wrapper node. It is the same as if the elements were not grouped.
 
 </details>
-
-
 
 ## Adding Style
 
@@ -224,7 +251,7 @@ Imagine we had this style rule defined in a CSS file:
 }
 ```
 
-We can add style by using the `className` property.
+We can add style by using the `className` attribute. Note that we aren't using `class`. In React, many of the HTML attributes that we've grown accustomed to will have _slightly_ different names.
 
 ```jsx
 const Message = () => {
@@ -265,14 +292,14 @@ The `for` attribute for `<label>` elements is another example of this. Instead, 
 
 </details>
 
-<details><summary><strong>Q: How can I add a <code>class="insta-pic"</code> attribute to the <code>figure</code> in my <code>InstagramPost</code> component?</strong></summary><br>
+<details><summary><strong>Q: How can I add a <code>class="insta-pic"</code> attribute to the <code>img</code> in my <code>InstagramPost</code> component?</strong></summary><br>
 
 ```jsx
 const InstagramPost = () => {
   return (
-    <figure className="insta-pic">
-      <img alt="cat pic" src="img/cat.jpeg" />
-      <figcaption>Check out my cute cat!</figcaption>
+    <figure >
+      <img alt="Reggie the cat" src="images/cat.jpeg" className="insta-pic"/>
+      <figcaption>Check out my cute cat Reggie!</figcaption>
     </figure>
   );
 };
@@ -280,7 +307,40 @@ const InstagramPost = () => {
 
 </details>
 
+## Inserting Data Into Components
+
+JSX let's you put markup into our JavaScript.
+
+We can also insert JavaScript into our JSX using curly braces `{}`.
+
+```jsx
+const InstagramPost = () => {
+  const catData = {
+    alt: "Reggie the cat",
+    src: "images/cat.jpeg",
+    caption: "Check out my cute cat Reggie!"
+  }
+
+  return (
+    <figure>
+      <img 
+        src={catData.src} 
+        alt={`Photo of ${catData.alt}`}  
+        className="insta-pic" 
+      />
+      <figcaption style={{ fontStyle: 'italic' }}>{catData.caption}</figcaption>
+    </figure>
+  );
+};
+```
+
+Notice how the `alt` attribute uses string concatenation!
+
+In the above example, `style={{}}` is not a special syntax, but a regular `{}` object inside the `style={ }` JSX curly braces. You can use the `style` attribute when your styles depend on JavaScript variables.
+
 ## Sharing Data Between Components With Props
+
+What makes React so powerful is the ability to share data between components using **props**. 
 
 Every React function-component is passed an argument called `props`. It is an object containing properties provided to the component by the parent.
 
@@ -305,8 +365,6 @@ const App = () => {
   );
 };
 ```
-
-Note how we can inject JavaScript values into our components using `{}`.
 
 <details><summary><strong>Q: What will this render?</strong></summary>
 
@@ -343,21 +401,24 @@ const InstagramPost = ({ src, caption }) => {
 
 // Array of data
 const pictures = [
-  { src: "img/cat.jpeg", caption: "cat!",  },
-  { src: "img/dog.jpeg", caption: "dog!" },
-  { src: "img/duck.jpeg", caption: "duck!" },
+  { src: "images/cat.jpeg", caption: "cat!",  },
+  { src: "images/dog.jpeg", caption: "dog!" },
+  { src: "images/duck.jpeg", caption: "duck!" },
 ];
-
-// Create an <InstagramPost /> for each element
-const InstagramPosts = pictures.map((picture, idx) => {
-  return (
-    <InstagramPost key={idx} src={picture.src} caption={picture.caption} />
-  );
-});
 
 // Render the array in a ul
 const PicturesList = () => {
-  return <div>{InstagramPosts}</div>;
+  return (
+    <ul>
+      {
+        pictures.map((picture, idx) => {
+          return (
+            <InstagramPost key={idx} src={picture.src} caption={picture.caption} />
+          );
+        })
+      }
+    </ul>
+  );
 };
 
 const App = () => {
@@ -372,37 +433,6 @@ const App = () => {
   );
 };
 ```
-
-
-## Rendering the Root Component With ReactDOM
-
-Head over to the `main.jsx` file. 
-
-The primary purpose of this file is render the root component `App`. To do so we:
-
-- Import a package called `ReactDOM`
-- Use the `ReactDOM.createRoot` method to create a `root` object.
-- Then we call `root.render` and pass in the `App` component.
-
-This is mostly handled when Vite creates the project for you so no need to memorize it:
-
-```jsx
-// main.jsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
-```
-
-A few notes: 
-
-- We're using the `client` version of `ReactDOM` (there is also a `native` version for mobile).
-- `React.StrictMode` is a wrapper-component that detects potential React-related in our application. It doesn't render anything visible.
 
 ### Under the hood: JSX Code must be compiled
 
